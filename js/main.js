@@ -15,6 +15,8 @@ for( var d = startDateObjFor; d <= endDateObj; d.setDate( d.getDate() + 1 )) {
     displayDates.push( new Date(d) );
 };
 
+var dateRangeArr = [ dateObjToStr2( startDateObj), dateObjToStr2( endDateObj ) ];
+
 // SIR model *******************************************************************
 // config ************************
 const sirStepsPerDay = 10;
@@ -276,7 +278,13 @@ Plotly.newPlot(
   }*/
 ],
 {
-  margin: { t: 20 } }
+  margin: { t: 20 },
+  xaxis: {
+    autorange: true,
+    range: dateRangeArr,
+    rangeslider: { range: dateRangeArr },
+    type: 'date'
+  }
 );
 
 

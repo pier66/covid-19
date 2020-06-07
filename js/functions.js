@@ -16,6 +16,13 @@ function dateObjToStr( dateObj ){
   return str;
 };
 
+function dateObjToStr2( dateObj ){
+  var str = String( dateObj.getFullYear() ) + "-";
+  str += String( dateObj.getMonth() + 1 ).padStart(2, '0') + "-";
+  str += String( dateObj.getDate() ).padStart(2, '0');
+  return str;
+};
+
 // data functions **************************************************************
 
 function translateValuesByDays( varName, byDays ){
