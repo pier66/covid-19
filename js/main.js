@@ -27,6 +27,8 @@ var sirBeta = 0.33;
 var sirGamma = 1/14;
 
 var sirRepro_0 = sirBeta / sirGamma;
+document.getElementById('textRepro_0').innerHTML = sirRepro_0;
+
 // *******************************
 
 var sirS = {};
@@ -279,11 +281,10 @@ Plotly.newPlot(
 
 
 function updateGraph(){
+  SIR();
+  document.getElementById('textRepro_0').innerHTML = sirRepro_0;
 
   Plotly.deleteTraces( graphDiv, [/*-8,-7,-6,*/-5,-4,-3, -2, -1] );
-
-  SIR();
-
   // SIR_DDE();
 
   var data = [
