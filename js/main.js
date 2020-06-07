@@ -285,7 +285,8 @@ Plotly.newPlot(
     rangeslider: { range: dateRangeArr },
     type: 'date'
   }
-}
+},
+{ responsive: true }
 );
 
 
