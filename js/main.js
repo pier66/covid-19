@@ -278,13 +278,13 @@ Plotly.newPlot(
   }*/
 ],
 {
-  margin: { t: 20 },
+  margin: { t: 20 }/*,
   xaxis: {
     autorange: true,
     range: dateRangeArr,
     rangeslider: { range: dateRangeArr },
     type: 'date'
-  }
+  } */
 }/*,
 { responsive: true }
 */
