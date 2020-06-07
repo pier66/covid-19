@@ -23,6 +23,10 @@
           height: 800px;
         }
 
+				#sliders {
+					display: flex;
+				}
+
 				.valueBox {
 						width: 50px;
 				}
@@ -35,7 +39,7 @@
 					display: inline-block;
 					margin-right: 50px;
 				}
-				
+
         </style>
 
         <script src="data/covid_plus_per_day.js"></script>
@@ -53,7 +57,7 @@
       <div id="container">
         <div id="graphDiv"></div>
 
-				<div>
+				<div id="sliders">
 					<table>
 						<tr>
 							<td align="right">N = </td>
@@ -98,7 +102,7 @@
 					</tr>
 			</table>
 
-			<span style="margin-left: 50px;">R_0 = <span id="textRepro_0"></span></span>
+			<div style="margin-left: 50px; display: inline-block;">R_0 = <span id="textRepro_0"></span></div>
 
 				</div>
 			</div>
