@@ -51,7 +51,7 @@ function SIR(){
   iStep = [];
   rStep = [];
 
-  sirRepro_0 = sirBeta / ( sirN * sirGamma );
+  sirRepro_0 = sirBeta / sirGamma;
 
   sStep[0] = sirN;
   iStep[0] = sirI_0 * sirN;
@@ -136,7 +136,7 @@ var deltaBetaLockdown =
 '#7f7f7f',  // middle gray
 '#bcbd22',  // curry yellow-green
 '#17becf'   // blue-teal
-      */
+*/
 
 
 Plotly.newPlot(
