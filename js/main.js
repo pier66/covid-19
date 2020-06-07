@@ -284,7 +284,7 @@ function updateGraph(){
 
   SIR();
 
-  SIR_DDE();
+  // SIR_DDE();
 
   var data = [
     {
