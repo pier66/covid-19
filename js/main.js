@@ -98,7 +98,7 @@ var detectedPerCentPerDay =
 
 
 var infected =
-    cumulateValues (
+    accumulateValues (
       addValues(
         addValues(
           getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
@@ -110,7 +110,7 @@ var infected =
 
 var infectedSmoothed =
       smoothValues(
-        cumulateValues (
+        accumulateValues (
           addValues(
             addValues(
               getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
@@ -120,6 +120,22 @@ var infectedSmoothed =
           )
         )
       );
+
+
+var infectedPerDaySmoothed = smoothValues(
+  getValuesReadyToPlot(
+    translateValuesByDays( covidPlusPerDay, -8 )
+  )
+);
+
+var infectedPerDayPerAccumulatedPercent =
+  multiplyValues(
+    divideValues(
+      infectedPerDaySmoothed,
+      accumulateValues( infectedPerDaySmoothed )
+  ), 100
+);
+
 
 var deltaBetaLockdown =
     multiplyValues(
@@ -174,12 +190,18 @@ Plotly.newPlot(
   	y: getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
     type: 'bar'
   },
-
   {
     name: 'infected per day smoothed',
     marker: {color: '#d62728'},
     x: displayDates,
-    y: smoothValues( getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ) ),
+    y: infectedPerDaySmoothed,
+    type: 'bar'
+  },
+  {
+    name: 'infected per day versus accumulated (%)',
+    marker: {color: '#aaaaaa'},
+    x: displayDates,
+    y: infectedPerDayPerAccumulatedPercent,
     type: 'bar'
   },
   {

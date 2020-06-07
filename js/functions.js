@@ -88,7 +88,7 @@ function multiplyValues( values, factor ) {
   return multipliedValues;
 };
 
-function cumulateValues( values ) {
+function accumulateValues( values ) {
   var sum = 0;
   var cumulatedValues = [];
   for( var i = 0; i < values.length; i++ ){
