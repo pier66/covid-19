@@ -317,7 +317,7 @@ function sirData(){
   ]
 };
 
-function shapes(){
+function getStageRectangles(){
   return [
         // phase A
         {
@@ -366,10 +366,28 @@ function shapes(){
                 width: 0
             }
         }
-    ]
+    ];
 };
 
-function annotations(){
+function getLockDownLine(){
+  return [
+    {
+      type: 'line',
+      xref: 'x',
+      yref: 'paper',
+      x0: '2020-03-16',
+      y0: 0,
+      x1: '2020-03-16',
+      y1: 1,
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 3
+      }
+    }
+  ];
+};
+
+function getStageLabels(){
   return [
   {
     x: dateObjToStr2( averageOfDateObj( startDateObj, stageAB ) ),
@@ -418,6 +436,24 @@ Plotly.newPlot(
 );
 
 
+function showHideStagesLockdown() {
+  var shapes = [];
+  var stageLabels = [];
+  if ( document.getElementById('checkboxStages').checked == true ){
+    shapes = shapes.concat( getStageRectangles() );
+    stageLabels = getStageLabels();
+  };
+
+  if ( document.getElementById('checkboxLockDown').checked == true ){
+    shapes = shapes.concat( getLockDownLine() );
+  };
+
+  Plotly.relayout( graphDiv, {
+    shapes: shapes,
+    annotations: stageLabels
+  });
+ };
+
 function updateGraph(){
   SIR();
 
@@ -426,17 +462,7 @@ function updateGraph(){
   Plotly.deleteTraces( graphDiv, [/*-8,-7,-6,*/-5,-4,-3, -2, -1] );
   Plotly.addTraces( graphDiv, sirData() );
 
-  if ( document.getElementById('checkboxStages').checked == true ){
-    Plotly.relayout( graphDiv, {
-      shapes: shapes(),
-      annotations: annotations()
-    });
-  } else {
-    Plotly.relayout( graphDiv, {
-      shapes: [],
-      annotations: []
-    });
-  };
+  showHideStagesLockdown();
 };
 
 function updateN(val) {
@@ -461,18 +487,4 @@ function updateGamma(val) {
     sirGamma = 1 / parseFloat(val);
     document.getElementById('textGamma').value = val;
     updateGraph();
-};
-
-function showHideStages() {
-  if ( document.getElementById('checkboxStages').checked == true ){
-    Plotly.relayout( graphDiv, {
-      shapes: shapes(),
-      annotations: annotations()
-    } );
-  } else {
-    Plotly.relayout( graphDiv, {
-      shapes: [],
-      annotations: []
-    });
- };
 };
