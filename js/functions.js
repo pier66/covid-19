@@ -23,6 +23,11 @@ function dateObjToStr2( dateObj ){
   return str;
 };
 
+function averageOfDateObj( dateObj1, dateObj2 ){
+  // var msOneDay = 24 * 60 * 60 * 1000;
+  return new Date( ( ( dateObj1.getTime() + dateObj2.getTime() ) / 2 ) /* + msOneDay  */);
+};
+
 // data functions **************************************************************
 
 function translateValuesByDays( varName, byDays ){
