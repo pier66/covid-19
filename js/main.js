@@ -390,7 +390,7 @@ function getLockDownLine(){
 function getStageLabels(){
   return [
   {
-    x: dateObjToStr2( averageOfDateObj( startDateObj, stageAB ) ),
+    x: averageOfDateObj( startDateObj, stageAB ),
     y: 1,
     xref: 'x',
     yref: 'paper',
@@ -398,7 +398,7 @@ function getStageLabels(){
     showarrow: false
   },
   {
-    x: dateObjToStr2( averageOfDateObj( stageAB, stageBC ) ),
+    x: averageOfDateObj( stageAB, stageBC ),
     y: 1,
     xref: 'x',
     yref: 'paper',
@@ -406,7 +406,7 @@ function getStageLabels(){
     showarrow: false
   },
   {
-    x: dateObjToStr2( averageOfDateObj( stageBC, endDateObj ) ),
+    x: averageOfDateObj( stageBC, endDateObj ),
     y: 1,
     xref: 'x',
     yref: 'paper',
