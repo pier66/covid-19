@@ -394,7 +394,7 @@ function getStageLabels(){
     y: 1,
     xref: 'x',
     yref: 'paper',
-    text: 'Phase A',
+    text: 'Stage A',
     showarrow: false
   },
   {
@@ -402,7 +402,7 @@ function getStageLabels(){
     y: 1,
     xref: 'x',
     yref: 'paper',
-    text: 'Phase B',
+    text: 'Stage B',
     showarrow: false
   },
   {
@@ -410,7 +410,7 @@ function getStageLabels(){
     y: 1,
     xref: 'x',
     yref: 'paper',
-    text: 'Phase C',
+    text: 'Stage C',
     showarrow: false
   }
 ]
