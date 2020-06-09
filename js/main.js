@@ -164,16 +164,19 @@ var infectedPerDayPerAccumulatedPercent =
     divideValues(
       infectedPerDaySmoothed,
       accumulateValues( infectedPerDaySmoothed )
-  ), 100
+    ),
+    100
 );
 
 
 var deltaBetaLockdown =
-    multiplyValues(
-      addValues(
-        infectedSmoothed,                                   // infected smoothed
-        multiplyValues( getValuesReadyToPlot( sirI ), -1 )  // -I
-      ), 1 / ( sirStepsPerDay  ) );  // * sirFactor
+  multiplyValues(
+    addValues(
+      infectedSmoothed,                                   // infected smoothed
+      multiplyValues( getValuesReadyToPlot( sirI ), -1 )  // -I
+    ),
+    1 / ( sirStepsPerDay  )
+  );
 
 
 /*
