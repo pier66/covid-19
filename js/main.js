@@ -394,7 +394,7 @@ function getStageLabels(){
   return [
   {
     x: averageOfDateObj( startDateObj, stageAB ),
-    y: 1,
+    y: 0.99,
     xref: 'x',
     yref: 'paper',
     text: 'Stage A',
@@ -402,7 +402,7 @@ function getStageLabels(){
   },
   {
     x: averageOfDateObj( stageAB, stageBC ),
-    y: 1,
+    y: 0.99,
     xref: 'x',
     yref: 'paper',
     text: 'Stage B',
@@ -410,7 +410,7 @@ function getStageLabels(){
   },
   {
     x: averageOfDateObj( stageBC, endDateObj ),
-    y: 1,
+    y: 0.99,
     xref: 'x',
     yref: 'paper',
     text: 'Stage C',
