@@ -8,7 +8,7 @@
         body {
             background-color: #fff;
 						font-family: sans-serif;
-						font-size: 12px;
+						font-size: 14px;
         }
 
         #container {
@@ -62,6 +62,44 @@
 				<div id="sliders">
 					<table>
 						<tr>
+							<td align="right">t<sub>0</sub> = </td>
+							<td>
+								<select id="textT_0" onchange="updateT_0(this.value);">
+									<option value="01.02.2020">01.02.2020</option>
+									<option value="02.02.2020">02.02.2020</option>
+									<option value="03.02.2020">03.02.2020</option>
+									<option value="04.02.2020">04.02.2020</option>
+									<option value="05.02.2020">05.02.2020</option>
+									<option value="06.02.2020">06.02.2020</option>
+									<option value="07.02.2020">07.02.2020</option>
+									<option value="08.02.2020">08.02.2020</option>
+									<option value="09.02.2020">09.02.2020</option>
+									<option value="10.02.2020">10.02.2020</option>
+									<option value="11.02.2020">11.02.2020</option>
+									<option value="12.02.2020">12.02.2020</option>
+									<option value="13.02.2020">13.02.2020</option>
+									<option value="14.02.2020">14.02.2020</option>
+									<option value="15.02.2020">15.02.2020</option>
+									<option value="16.02.2020">16.02.2020</option>
+									<option value="17.02.2020" selected>17.02.2020</option>
+									<option value="18.02.2020">18.02.2020</option>
+									<option value="19.02.2020">19.02.2020</option>
+									<option value="20.02.2020">20.02.2020</option>
+									<option value="21.02.2020">21.02.2020</option>
+									<option value="22.02.2020">22.02.2020</option>
+									<option value="23.02.2020">23.02.2020</option>
+									<option value="24.02.2020">24.02.2020</option>
+									<option value="25.02.2020">25.02.2020</option>
+									<option value="26.02.2020">26.02.2020</option>
+									<option value="27.02.2020">27.02.2020</option>
+									<option value="28.02.2020">28.02.2020</option>
+									<option value="29.02.2020">29.02.2020</option>
+							</select>
+						</td>
+						</tr>
+				</table>
+					<table>
+						<tr>
 							<td align="right">N = </td>
 							<td><input class="valueBox" type="text" id="textN" value="5000"></td>
 						</tr>
@@ -73,18 +111,18 @@
 
 				<table>
 					<tr>
-						<td align="right">I_0 = </td>
-						<td><input class="valueBox" type="text" id="textI_0" value="0.002"></td>
+						<td align="right">I<sub>0</sub> = </td>
+						<td><input class="valueBox" type="text" id="textI_0" value="2"></td>
 					</tr>
-						<td colspan="2"><input class="slider" type="range" name="rangeInput" min="0.001" max="0.003"
-						step="0.0001" oninput="updateI_0(this.value);" value="0.002"></td>
+						<td colspan="2"><input class="slider" type="range" name="rangeInput" min="1" max="10"
+						step="0.1" oninput="updateI_0(this.value);" value="2"></td>
 					<tr>
 					</tr>
 			</table>
 
 				<table>
 						<tr>
-							<td align="right">beta = </td>
+							<td align="right">&beta; = </td>
 							<td><input class="valueBox" type="text" id="textBeta" value="0.33"></td>
 						</tr>
 							<td colspan="2"><input class="slider" type="range" name="rangeInput" min="0.1" max="0.5"
@@ -95,7 +133,7 @@
 
 			<table>
 					<tr>
-						<td align="right">1 / gamma = </td>
+						<td align="right">1 / &gamma; = </td>
 						<td><input class="valueBox" type="text" id="textGamma" value="14"></td>
 					</tr>
 						<td colspan="2"><input class="slider" type="range" name="rangeInput" min="10" max="18"
@@ -107,6 +145,10 @@
 				<div style="margin-right: 50px; display: inline-block;">R_0 = <span id="textRepro_0"></span></div>
 
 				<table>
+					<tr>
+						<td align="right">t<sub>0</sub>:</td>
+						<td><input type="checkbox" id="checkboxT_0" onclick="showHideStagesLockdown()"></td>
+					</tr>
 					<tr>
 						<td align="right">stages:</td>
 						<td><input type="checkbox" id="checkboxStages" onclick="showHideStagesLockdown()"></td>

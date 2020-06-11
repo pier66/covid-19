@@ -2,8 +2,8 @@
 // html tag
 const graphDiv = document.getElementById('graphDiv');
 
-// dates *********************************************
-const startDateStr = "24/02/2020";
+// display dates *********************************************
+const startDateStr = "01/02/2020";
 const endDateStr = "31/05/2020";
 
 const startDateObj = dateStrToObj( startDateStr );
@@ -19,17 +19,18 @@ var dateRangeArr = [ dateObjToStr2( startDateObj ), dateObjToStr2( endDateObj ) 
 
 // SIR model *******************************************************************
 // config ************************
-const sirStepsPerDay = 10;
 
+var sirT_0 = "17/02/2020";
 var sirN = 5000;
-var sirI_0 = 0.002;
+var sirI_0 = 2 / sirN;
 var sirR_0 = 0;
 
 var sirBeta = 0.33;
 var sirGamma = 1/14;
 
-var sirRepro_0 = sirBeta / sirGamma;
+const sirStepsPerDay = 10;
 
+var sirRepro_0 = sirBeta / sirGamma;
 document.getElementById('textRepro_0').innerHTML = sirRepro_0.toFixed(2);
 
 // *******************************
@@ -48,7 +49,24 @@ var stageAB;
 var stageBC;
 
 function SIR(){
+  console.log( sirT_0 );
+
+  // SIR dates array
+  var sirDates = [];
+  var sirT_0DateObjFor = dateStrToObj( sirT_0 );
+  for( var d = sirT_0DateObjFor; d <= endDateObj; d.setDate( d.getDate() + 1 )) {
+    console.log(d);
+    sirDates.push( new Date(d) );
+  };
+
+  // set SIR S object = 0 until sirT_0
   sirS = {};
+  var sirT_0DateObjFor2 = dateStrToObj( startDateStr );
+  for( var d = sirT_0DateObjFor2; d < dateStrToObj( sirT_0 ); d.setDate( d.getDate() + 1 )) {
+      console.log(dateObjToStr(d));
+      sirS[dateObjToStr(d)] = sirN;
+  };
+
   sirI = {};
   sirR = {};
 
@@ -69,9 +87,9 @@ function SIR(){
   var stageBCset = false;
 
   var i = 0;
-  for( var d = 0; d < displayDates.length; d++ ) {
+  for( var d = 0; d < sirDates.length; d++ ) {
 
-    var dateStrCur = dateObjToStr(displayDates[d]);
+    var dateStrCur = dateObjToStr( sirDates[d] );
 
     sirS[dateStrCur] = sStep[i];
     sirI[dateStrCur] = iStep[i];
@@ -90,25 +108,24 @@ function SIR(){
     if(
       d > 1
       &&
-      sirIperDay[dateStrCur] <  sirIperDay[dateObjToStr(displayDates[d-1])]
+      sirIperDay[dateStrCur] <  sirIperDay[dateObjToStr(sirDates[d-1])]
       &&
       !stageABset
     ){
-      stageAB = displayDates[d-1];
+      stageAB = sirDates[d-1];
       stageABset = true;
     };
 
     if(
       d > 1
       &&
-      sirI[dateStrCur] <  sirI[dateObjToStr(displayDates[d-1])]
+      sirI[dateStrCur] <  sirI[dateObjToStr(sirDates[d-1])]
       &&
       !stageBCset
     ){
-      stageBC = displayDates[d-1];
+      stageBC = sirDates[d-1];
       stageBCset = true;
     };
-
   }
 };
 
@@ -384,7 +401,25 @@ function getLockDownLine(){
       y1: 1,
       line: {
         color: 'rgb(55, 128, 191)',
-        width: 3
+        width: 2
+      }
+    }
+  ];
+};
+
+function getSirT_0Line(){
+  return [
+    {
+      type: 'line',
+      xref: 'x',
+      yref: 'paper',
+      x0: dateStrToObj( sirT_0 ),
+      y0: 0,
+      x1: dateStrToObj( sirT_0 ),
+      y1: 1,
+      line: {
+        color: 'rgb(55, 128, 191)',
+        width: 2
       }
     }
   ];
@@ -451,6 +486,10 @@ function showHideStagesLockdown() {
     shapes = shapes.concat( getLockDownLine() );
   };
 
+  if ( document.getElementById('checkboxT_0').checked == true ){
+    shapes = shapes.concat( getSirT_0Line() );
+  };
+
   Plotly.relayout( graphDiv, {
     shapes: shapes,
     annotations: stageLabels
@@ -468,14 +507,22 @@ function updateGraph(){
   showHideStagesLockdown();
 };
 
-function updateN(val) {
+
+function updateT_0( val ) {
+  console.log(val);
+  sirT_0 = val;
+  updateGraph();
+};
+
+function updateN( val ) {
     sirN = parseFloat(val);
     document.getElementById('textN').value = val;
     updateGraph();
 };
 
-function updateI_0(val) {
-    sirI_0 = parseFloat(val);
+function updateI_0( val ) {
+    sirI_0 = parseFloat( val / sirN );
+    console.log(sirI_0);
     document.getElementById('textI_0').value = val;
     updateGraph();
 };
