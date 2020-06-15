@@ -17,122 +17,19 @@ for( var d = startDateObjFor; d <= endDateObj; d.setDate( d.getDate() + 1 )) {
 
 var dateRangeArr = [ dateObjToStr2( startDateObj ), dateObjToStr2( endDateObj ) ];
 
-// SIR model *******************************************************************
-// config ************************
-
-var sirT_0 = "17/02/2020";
-var sirN = 5000;
-var sirI_0 = 2 / sirN;
-var sirR_0 = 0;
-
-var sirBeta = 0.33;
-var sirGamma = 1/14;
-
-const sirStepsPerDay = 10;
-
-var sirRepro_0 = sirBeta / sirGamma;
-document.getElementById('textRepro_0').innerHTML = sirRepro_0.toFixed(2);
-
-// *******************************
-
-var sirS = {};
-var sirI = {};
-var sirR = {};
-var sirIperDay = {};
-var sirRperDay = {};
-
-var sStep = [];
-var iStep = [];
-var rStep = [];
-
-var stageAB;
-var stageBC;
-
-function SIR(){
-  console.log( sirT_0 );
-
-  // SIR dates array
-  var sirDates = [];
-  var sirT_0DateObjFor = dateStrToObj( sirT_0 );
-  for( var d = sirT_0DateObjFor; d <= endDateObj; d.setDate( d.getDate() + 1 )) {
-    console.log(d);
-    sirDates.push( new Date(d) );
-  };
-
-  // set SIR S object = 0 until sirT_0
-  sirS = {};
-  var sirT_0DateObjFor2 = dateStrToObj( startDateStr );
-  for( var d = sirT_0DateObjFor2; d < dateStrToObj( sirT_0 ); d.setDate( d.getDate() + 1 )) {
-      console.log(dateObjToStr(d));
-      sirS[dateObjToStr(d)] = sirN;
-  };
-
-  sirI = {};
-  sirR = {};
-
-  sirIperDay = {};
-  sirRperDay = {};
-
-  sStep = [];
-  iStep = [];
-  rStep = [];
-
-  sirRepro_0 = sirBeta / sirGamma;
-
-  sStep[0] = sirN;
-  iStep[0] = sirI_0 * sirN;
-  rStep[0] = sirR_0;
-
-  var stageABset = false;
-  var stageBCset = false;
-
-  var i = 0;
-  for( var d = 0; d < sirDates.length; d++ ) {
-
-    var dateStrCur = dateObjToStr( sirDates[d] );
-
-    sirS[dateStrCur] = sStep[i];
-    sirI[dateStrCur] = iStep[i];
-    sirR[dateStrCur] = rStep[i];
-
-    for( var s = 1; s <= sirStepsPerDay; s++ ){
-      sStep[i+1] = sStep[i] - ( sirBeta / sirN ) * sStep[i] * iStep[i] / sirStepsPerDay;
-      iStep[i+1] = iStep[i] + ( ( sirBeta / sirN ) * sStep[i] * iStep[i] - sirGamma * iStep[i] ) / sirStepsPerDay;
-      rStep[i+1] = rStep[i] + sirGamma * iStep[i] / sirStepsPerDay;
-      i++;
-    };
-
-    sirIperDay[dateStrCur] = - ( sStep[i-1] - sirS[dateStrCur] );
-    sirRperDay[dateStrCur] = - ( rStep[i-1] - sirR[dateStrCur] );
-
-    if(
-      d > 1
-      &&
-      sirIperDay[dateStrCur] <  sirIperDay[dateObjToStr(sirDates[d-1])]
-      &&
-      !stageABset
-    ){
-      stageAB = sirDates[d-1];
-      stageABset = true;
-    };
-
-    if(
-      d > 1
-      &&
-      sirI[dateStrCur] <  sirI[dateObjToStr(sirDates[d-1])]
-      &&
-      !stageBCset
-    ){
-      stageBC = sirDates[d-1];
-      stageBCset = true;
-    };
-  }
-};
-
 
 // plot ************************************************************************
 
-SIR();
+var sir = new SIR();
+var sirResult = sir.compute();
+
+var sirS = sirResult.S
+var sirI = sirResult.I;
+var sirR = sirResult.R;
+var sirIperDay = sirResult.IperDay;
+var sirRperDay = sirResult.RperDay;
+var stageAB = sirResult.stageAB;
+var stageBC = sirResult.stageBC;
 
 //v SIR_DDE();
 
@@ -185,6 +82,7 @@ var infectedPerDayPerAccumulatedPercent =
     100
 );
 
+/*
 
 var deltaBetaLockdown =
   multiplyValues(
@@ -194,6 +92,7 @@ var deltaBetaLockdown =
     ),
     1 / ( sirStepsPerDay  )
   );
+*/
 
 
 /*
@@ -308,31 +207,31 @@ function sirData(){
       name: 'SIR susceptible',
       marker: {color: '#17becf'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirS )
+      y: getValuesReadyToPlot( sirResult.S )
     },
     {
       name: 'SIR infected',
       marker: {color: '#9467bd'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirI )
+      y: getValuesReadyToPlot( sirResult.I )
     },
     {
       name: 'SIR recovered',
       marker: {color: '#bcbd22'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirR )
+      y: getValuesReadyToPlot( sirResult.R )
     },
     {
       name: 'SIR infected per day',
       marker: {color: '#d62728'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirIperDay )
+      y: getValuesReadyToPlot( sirResult.IperDay )
     },
     {
       name: 'SIR recovered per day',
       marker: {color: '#2ca02c'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirRperDay )
+      y: getValuesReadyToPlot( sirResult.RperDay )
     }
   ]
 };
@@ -346,9 +245,9 @@ function getStageRectangles(){
             xref: 'x',
             // y-reference is assigned to the plot paper [0,1]
             yref: 'paper',
-            x0: dateStrToObj( sirT_0 ),
+            x0: dateStrToObj( sir.t_0 ),
             y0: 0,
-            x1: stageAB,
+            x1: sirResult.stageAB,
             y1: 1,
             fillcolor: '#FF5733',
             opacity: 0.2,
@@ -361,9 +260,9 @@ function getStageRectangles(){
             type: 'rect',
             xref: 'x',
             yref: 'paper',
-            x0: stageAB,
+            x0: sirResult.stageAB,
             y0: 0,
-            x1: stageBC,
+            x1: sirResult.stageBC,
             y1: 1,
             fillcolor: '#FFC300',
             opacity: 0.2,
@@ -376,7 +275,7 @@ function getStageRectangles(){
             type: 'rect',
             xref: 'x',
             yref: 'paper',
-            x0: stageBC,
+            x0: sirResult.stageBC,
             y0: 0,
             x1: endDateObj,
             y1: 1,
@@ -413,9 +312,9 @@ function getSirT_0Line(){
       type: 'line',
       xref: 'x',
       yref: 'paper',
-      x0: dateStrToObj( sirT_0 ),
+      x0: dateStrToObj( sir.t_0 ),
       y0: 0,
-      x1: dateStrToObj( sirT_0 ),
+      x1: dateStrToObj( sir.t_0 ),
       y1: 1,
       line: {
         color: 'rgb(55, 128, 191)',
@@ -428,7 +327,7 @@ function getSirT_0Line(){
 function getStageLabels(){
   return [
   {
-    x: averageOfDateObj( dateStrToObj( sirT_0 ), stageAB ),
+    x: averageOfDateObj( dateStrToObj( sir.t_0 ), sirResult.stageAB ),
     y: 0.99,
     xref: 'x',
     yref: 'paper',
@@ -436,7 +335,7 @@ function getStageLabels(){
     showarrow: false
   },
   {
-    x: averageOfDateObj( stageAB, stageBC ),
+    x: averageOfDateObj( sirResult.stageAB, sirResult.stageBC ),
     y: 0.99,
     xref: 'x',
     yref: 'paper',
@@ -444,7 +343,7 @@ function getStageLabels(){
     showarrow: false
   },
   {
-    x: averageOfDateObj( stageBC, endDateObj ),
+    x: averageOfDateObj( sirResult.stageBC, endDateObj ),
     y: 0.99,
     xref: 'x',
     yref: 'paper',
@@ -497,9 +396,7 @@ function showHideStagesLockdown() {
  };
 
 function updateGraph(){
-  SIR();
-
-  document.getElementById('textRepro_0').innerHTML = sirRepro_0.toFixed(2);;
+  sirResult = sir.compute();
 
   Plotly.deleteTraces( graphDiv, [/*-8,-7,-6,*/-5,-4,-3, -2, -1] );
   Plotly.addTraces( graphDiv, sirData() );
@@ -510,31 +407,38 @@ function updateGraph(){
 
 function updateT_0( val ) {
   console.log(val);
-  sirT_0 = val;
+
+  sir.setParams( { 't_0': val } );
+  // sirT_0 = val;
   updateGraph();
 };
 
 function updateN( val ) {
-    sirN = parseFloat(val);
+    // sirN = parseFloat(val);
+    sir.setParams( { 'S_0': parseFloat(val) } );
     document.getElementById('textN').value = val;
     updateGraph();
 };
 
 function updateI_0( val ) {
-    sirI_0 = parseFloat( val / sirN );
-    console.log(sirI_0);
+    // sirI_0 = parseFloat( val / sirN );
+    sir.setParams( { 'I_0': parseFloat( val / sir.S_0 ) } );
+
     document.getElementById('textI_0').value = val;
     updateGraph();
 };
 
 function updateBeta(val) {
-    sirBeta = parseFloat(val);
+    //sirBeta = parseFloat(val);
+    sir.setParams( { 'beta': parseFloat( val ) } );
     document.getElementById('textBeta').value = val;
     updateGraph();
 };
 
 function updateGamma(val) {
-    sirGamma = 1 / parseFloat(val);
+    // sirGamma = 1 / parseFloat(val);
+
+    sir.setParams( { 'gamma': 1 / parseFloat( val ) } );
     document.getElementById('textGamma').value = val;
     updateGraph();
 };
