@@ -25,8 +25,8 @@
           height: 800px;
         }
 
-				#sliders {
-					display: flex;
+				.sliders {
+					/*display: flex;*/
 				}
 
 				.valueBox {
@@ -37,7 +37,7 @@
 					width: 200px;
 				}
 
-				table {
+				table, .inlineBlock {
 					display: inline-block;
 					margin-right: 30px;
 				}
@@ -60,12 +60,12 @@
       <div id="container">
         <div id="graphDiv"></div>
 
-				<div id="sliders">
+				<div class="sliders">
 					<table>
 						<tr>
 							<td align="right">t<sub>0</sub> = </td>
 							<td>
-								<select id="textT_0" onchange="updateT_0(this.value);">
+								<select id="textT_0" onchange="update( 't_0', this.value );">
 									<option value="01.02.2020">01.02.2020</option>
 									<option value="02.02.2020">02.02.2020</option>
 									<option value="03.02.2020">03.02.2020</option>
@@ -101,11 +101,11 @@
 				</table>
 					<table>
 						<tr>
-							<td align="right">N = </td>
-							<td><input class="valueBox" type="text" id="textN" value="5000"></td>
+							<td align="right">S<sub>0</sub> = </td>
+							<td><input class="valueBox" type="text" id="textS_0" value="5000"></td>
 						</tr>
 							<td colspan="2"><input class="slider" type="range" name="rangeInput" min="3000" max="7000"
-							step="1" oninput="updateN(this.value);" value="5000"></td>
+							step="1" oninput="update( 'S_0', this.value );" value="5000"></td>
 						<tr>
 						</tr>
 				</table>
@@ -116,7 +116,7 @@
 						<td><input class="valueBox" type="text" id="textI_0" value="2"></td>
 					</tr>
 						<td colspan="2"><input class="slider" type="range" name="rangeInput" min="1" max="10"
-						step="0.1" oninput="updateI_0(this.value);" value="2"></td>
+						step="0.1" oninput="update( 'I_0', this.value );" value="2"></td>
 					<tr>
 					</tr>
 			</table>
@@ -127,7 +127,7 @@
 							<td><input class="valueBox" type="text" id="textBeta" value="0.33"></td>
 						</tr>
 							<td colspan="2"><input class="slider" type="range" name="rangeInput" min="0.1" max="0.5"
-							step="0.01" oninput="updateBeta(this.value);" value="0.33"></td>
+							step="0.01" oninput="update( 'beta', this.value );" value="0.33"></td>
 						<tr>
 						</tr>
 			</table>
@@ -138,7 +138,7 @@
 						<td><input class="valueBox" type="text" id="textGamma" value="14"></td>
 					</tr>
 						<td colspan="2"><input class="slider" type="range" name="rangeInput" min="10" max="18"
-						step="0.1" oninput="updateGamma(this.value);" value="14"></td>
+						step="0.1" oninput="update( 'gamma', this.value);" value="14"></td>
 					<tr>
 					</tr>
 			</table>
@@ -146,6 +146,9 @@
 				<div style="margin-right: 50px; display: inline-block;">R<sub>0</sub> = <span id="textRepro_0"></span></div>
 
 				<table>
+					<tr>
+						<td colspan="2" align="center">display</td>
+					</tr>
 					<tr>
 						<td align="right">t<sub>0</sub>:</td>
 						<td><input type="checkbox" id="checkboxT_0" onclick="showHideStagesLockdown()"></td>
@@ -159,7 +162,91 @@
 						<td><input type="checkbox" id="checkboxLockDown" onclick="showHideStagesLockdown()"></td>
 							</tr>
 					<table>
+			</div>
 
+			<div class="sliders">
+				<table>
+					<tr>
+						<td align="right">t<sub>LD</sub> = </td>
+						<td>
+							<select id="textT_LD" onchange="update( 't_LD', this.value );">
+								<option value="01.02.2020">01.02.2020</option>
+								<option value="02.02.2020">02.02.2020</option>
+								<option value="03.02.2020">03.02.2020</option>
+								<option value="04.02.2020">04.02.2020</option>
+								<option value="05.02.2020">05.02.2020</option>
+								<option value="06.02.2020">06.02.2020</option>
+								<option value="07.02.2020">07.02.2020</option>
+								<option value="08.02.2020">08.02.2020</option>
+								<option value="09.02.2020">09.02.2020</option>
+								<option value="10.02.2020">10.02.2020</option>
+								<option value="11.02.2020">11.02.2020</option>
+								<option value="12.02.2020">12.02.2020</option>
+								<option value="13.02.2020">13.02.2020</option>
+								<option value="14.02.2020">14.02.2020</option>
+								<option value="15.02.2020">15.02.2020</option>
+								<option value="16.02.2020">16.02.2020</option>
+								<option value="17.02.2020">17.02.2020</option>
+								<option value="18.02.2020">18.02.2020</option>
+								<option value="19.02.2020">19.02.2020</option>
+								<option value="20.02.2020">20.02.2020</option>
+								<option value="21.02.2020">21.02.2020</option>
+								<option value="22.02.2020">22.02.2020</option>
+								<option value="23.02.2020">23.02.2020</option>
+								<option value="24.02.2020">24.02.2020</option>
+								<option value="25.02.2020">25.02.2020</option>
+								<option value="26.02.2020">26.02.2020</option>
+								<option value="27.02.2020">27.02.2020</option>
+								<option value="28.02.2020">28.02.2020</option>
+								<option value="29.02.2020">29.02.2020</option>
+								<option value="01.03.2020">01.03.2020</option>
+								<option value="02.03.2020">02.03.2020</option>
+								<option value="03.03.2020">03.03.2020</option>
+								<option value="04.03.2020">04.03.2020</option>
+								<option value="05.03.2020">05.03.2020</option>
+								<option value="06.03.2020">06.03.2020</option>
+								<option value="07.03.2020">07.03.2020</option>
+								<option value="08.03.2020">08.03.2020</option>
+								<option value="09.03.2020">09.03.2020</option>
+								<option value="10.03.2020">10.03.2020</option>
+								<option value="11.03.2020">11.03.2020</option>
+								<option value="12.03.2020">12.03.2020</option>
+								<option value="13.03.2020">13.03.2020</option>
+								<option value="14.03.2020">14.03.2020</option>
+								<option value="15.03.2020">15.03.2020</option>
+								<option value="16.03.2020" selected>16.03.2020</option>
+								<option value="17.03.2020">17.03.2020</option>
+								<option value="18.03.2020">18.03.2020</option>
+								<option value="19.03.2020">19.03.2020</option>
+								<option value="20.03.2020">20.03.2020</option>
+								<option value="21.03.2020">21.03.2020</option>
+								<option value="22.03.2020">22.03.2020</option>
+								<option value="23.03.2020">23.03.2020</option>
+								<option value="24.03.2020">24.03.2020</option>
+								<option value="25.03.2020">25.03.2020</option>
+								<option value="26.03.2020">26.03.2020</option>
+								<option value="27.03.2020">27.03.2020</option>
+								<option value="28.03.2020">28.03.2020</option>
+								<option value="29.03.2020">29.03.2020</option>
+								<option value="30.03.2020">30.03.2020</option>
+								<option value="31.03.2020">31.03.2020</option>
+						</select>
+					</td>
+					</tr>
+			</table>
+
+			<div class="inlineBlock"><input type="checkbox" id="checkboxSIRLockDown" onclick="update( 'lockDown', 0 )"></div>
+
+			<table>
+					<tr>
+						<td align="right">&beta;<sub>LD</sub> = </td>
+						<td><input class="valueBox" type="text" id="textBetaLD" value="0.33"></td>
+					</tr>
+						<td colspan="2"><input class="slider" type="range" name="rangeInput" min="0.1" max="0.5"
+						step="0.01" oninput="update('beta_LD', this.value );" value="0.33"></td>
+					<tr>
+					</tr>
+			</table>
 
 			</div>
 

@@ -31,8 +31,6 @@ var sirRperDay = sirResult.RperDay;
 var stageAB = sirResult.stageAB;
 var stageBC = sirResult.stageBC;
 
-//v SIR_DDE();
-
 var detectedPerCentPerDay =
     multiplyValues(
       divideValues(
@@ -164,9 +162,7 @@ function staticData(){
       marker: {color: '#bcbd22'},
       x: displayDates,
       y: multiplyValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ), -1),
-      type: 'bar',
-      barmode: 'stack',
-      xaxis: 'x1'
+      type: 'bar'
     },
     {
       name: 'recovered per day -8 days smoothed',
@@ -180,9 +176,7 @@ function staticData(){
       marker: {color: '#1f77b4'},
       x: displayDates,
       y: multiplyValues( getValuesReadyToPlot( gonePerDay ), -1 ),
-      type: 'bar',
-      barmode: 'stack',
-      xaxis: 'x1'
+      type: 'bar'
     },
     {
       name: 'infected',
@@ -193,10 +187,10 @@ function staticData(){
     },
     {
       name: 'infected smoothed',
-      marker: {color: '#9467bd'},
+      marker: {color: '#e377c2'},
       x: displayDates,
-      y: infectedSmoothed,
-      type: 'bar'
+      y: infectedSmoothed /*,
+      type: 'bar' */
     }
   ]
 };
@@ -294,9 +288,9 @@ function getLockDownLine(){
       type: 'line',
       xref: 'x',
       yref: 'paper',
-      x0: '2020-03-16',
+      x0: dateStrToObj( sir.t_LD ),
       y0: 0,
-      x1: '2020-03-16',
+      x1: dateStrToObj( sir.t_LD ),
       y1: 1,
       line: {
         color: 'rgb(55, 128, 191)',
@@ -395,50 +389,69 @@ function showHideStagesLockdown() {
   });
  };
 
+/*
 function updateGraph(){
   sirResult = sir.compute();
-
-  Plotly.deleteTraces( graphDiv, [/*-8,-7,-6,*/-5,-4,-3, -2, -1] );
+  Plotly.deleteTraces( graphDiv, [-5,-4,-3, -2, -1] );
   Plotly.addTraces( graphDiv, sirData() );
-
   showHideStagesLockdown();
 };
+*/
 
+function update( param, val ) {
+  var repro_0;
+    switch( param ){
+      case 't_0':
+      sir.setParams( { 't_0': val } );
+      break;
 
-function updateT_0( val ) {
-  console.log(val);
+      case 'S_0':
+      sir.setParams( { 'S_0': parseFloat( val ) } );
+      document.getElementById('textS_0').value = val;
+      break;
 
-  sir.setParams( { 't_0': val } );
-  // sirT_0 = val;
-  updateGraph();
-};
+      case 'I_0':
+      sir.setParams( { 'I_0': parseFloat( val ) / sir.S_0 } );
+      document.getElementById('textI_0').value = val;
+      break;
 
-function updateN( val ) {
-    // sirN = parseFloat(val);
-    sir.setParams( { 'S_0': parseFloat(val) } );
-    document.getElementById('textN').value = val;
-    updateGraph();
-};
+      case 'beta':
+      sir.setParams( { 'beta': parseFloat( val ) } );
+      document.getElementById('textBeta').value = val;
+      repro_0 = sir.beta / sir.gamma;
+      document.getElementById('textRepro_0').innerHTML = repro_0.toFixed( 2 );
+      break;
 
-function updateI_0( val ) {
-    // sirI_0 = parseFloat( val / sirN );
-    sir.setParams( { 'I_0': parseFloat( val / sir.S_0 ) } );
+      case 'gamma':
+      sir.setParams( { 'gamma': 1 / parseFloat( val ) } );
+      document.getElementById('textGamma').value = val;
+      repro_0 = sir.beta / sir.gamma;
+      document.getElementById('textRepro_0').innerHTML = repro_0.toFixed( 2 );
+      break;
 
-    document.getElementById('textI_0').value = val;
-    updateGraph();
-};
+      case 'lockDown':
+      if( document.getElementById('checkboxSIRLockDown').checked == true ){
+        sir.setParams( { 'lockDown': true } );
+        console.log( 'ld: true');
+      }
+      else {
+        console.log( 'ld: false');
+        sir.setParams( { 'lockDown': false } );
+      };
+      break;
 
-function updateBeta(val) {
-    //sirBeta = parseFloat(val);
-    sir.setParams( { 'beta': parseFloat( val ) } );
-    document.getElementById('textBeta').value = val;
-    updateGraph();
-};
+      case 't_LD':
+      sir.setParams( { 't_LD': val } );
+      break;
 
-function updateGamma(val) {
-    // sirGamma = 1 / parseFloat(val);
+      case 'beta_LD':
+      sir.setParams( { 'beta_LD': parseFloat( val ) } );
+      document.getElementById('textBetaLD').value = val;
+      break;
+    };
 
-    sir.setParams( { 'gamma': 1 / parseFloat( val ) } );
-    document.getElementById('textGamma').value = val;
-    updateGraph();
+    sirResult = sir.compute();
+    Plotly.deleteTraces( graphDiv, [/*-8,-7,-6,*/-5,-4,-3, -2, -1] );
+    Plotly.addTraces( graphDiv, sirData() );
+    showHideStagesLockdown();
 };

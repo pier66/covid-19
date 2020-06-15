@@ -1,5 +1,4 @@
 // SIR model *******************************************************************
-// config ************************
 
 class SIR {
   constructor(){
@@ -7,12 +6,15 @@ class SIR {
       this.t_end = "31/05/2020";
       this.graphT_0 = "01/02/2020";
       this.graphT_end = "31/05/2020";
+      this.t_LD = "16/03/2020";
 
       this.S_0 = 5000;
       this.I_0 = 2 / this.S_0;
       this.R_0 = 0;
 
+      this.lockDown = false;
       this.beta = 0.33;
+      this.beta_LD = 0.33;
       this.gamma = 1/14;
       this.repro_0 = this.beta / this.gamma;
       document.getElementById('textRepro_0').innerHTML = this.repro_0.toFixed(2);
@@ -43,7 +45,10 @@ class SIR {
   };
 
   setParams( params ){
-    var allParams = ['t_0', 't_end', 'graphT_0', 'graphT_end', 'S_0', 'I_0', 'R_0', 'beta', 'gamma'];
+    var allParams = [
+      't_0', 't_end', 'graphT_0', 'graphT_end', 't_LD',
+      'S_0', 'I_0', 'R_0', 'lockDown', 'beta', 'beta_LD', 'gamma'
+    ];
     for( var i = 0; i < allParams.length; i++ ){
       if( params[allParams[i]] ){
         this[allParams[i]] = params[allParams[i]];
@@ -80,6 +85,10 @@ class SIR {
     var stageBCset = false;
 
     var i = 0;
+    var curBeta;
+    var betaSteps = 0;
+    var curBetaArr = [];
+
     for( var d = 0; d < sirDates.length; d++ ) {
 
       var dateStrCur = this._dateObjToStr( sirDates[d] );
@@ -89,8 +98,24 @@ class SIR {
       this.R[dateStrCur] = rStep[i];
 
       for( var s = 1; s <= this.stepsPerDay; s++ ){
-        sStep[i+1] = sStep[i] - ( this.beta / this.S_0 ) * sStep[i] * iStep[i] / this.stepsPerDay;
-        iStep[i+1] = iStep[i] + ( ( this.beta / this.S_0 ) * sStep[i] * iStep[i] - this.gamma * iStep[i] ) / this.stepsPerDay;
+
+        // beta **************************************
+        if( this.lockDown && sirDates[d] >= this._dateStrToObj( this.t_LD ) ) {
+          if( betaSteps < this.stepsPerDay ) {
+            betaSteps++;
+            curBeta = this.beta * ( 1 - betaSteps / this.stepsPerDay) + ( betaSteps / this.stepsPerDay ) * this.beta_LD;
+            curBetaArr.push( curBeta );
+          }
+          else {
+            curBeta = this.beta_LD;
+          };
+        }
+        else {
+          curBeta = this.beta;
+        };
+
+        sStep[i+1] = sStep[i] - ( curBeta / this.S_0 ) * sStep[i] * iStep[i] / this.stepsPerDay;
+        iStep[i+1] = iStep[i] + ( ( curBeta / this.S_0 ) * sStep[i] * iStep[i] - this.gamma * iStep[i] ) / this.stepsPerDay;
         rStep[i+1] = rStep[i] + this.gamma * iStep[i] / this.stepsPerDay;
         i++;
       };
@@ -119,7 +144,10 @@ class SIR {
         stageBC = sirDates[d-1];
         stageBCset = true;
       };
-    }
+    };
+
+    // console.log(curBetaArr);
+
     return {
       S: this.S,
       I: this.I,
