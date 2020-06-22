@@ -27,6 +27,8 @@ class SIR {
 
       this.IperDay = {};
       this.RperDay = {};
+
+      this.paramsToOptimize = [];
   }
 
   _dateStrToObj( dateStr ){
@@ -50,7 +52,7 @@ class SIR {
       'S_0', 'I_0', 'R_0', 'lockDown', 'beta', 'beta_LD', 'gamma'
     ];
     for( var i = 0; i < allParams.length; i++ ){
-      if( params[allParams[i]] ){
+      if( typeof params[allParams[i]] !== 'undefined' ){
         this[allParams[i]] = params[allParams[i]];
       }
     };
@@ -64,10 +66,11 @@ class SIR {
       sirDates.push( new Date(d) );
     };
 
-    // set SIR S object = 0 until t_0
+    // set SIR R object = 0 and set SIR S object = 0 until t_0
     var startDateObj2 = this._dateStrToObj( this.graphT_0 );
     for( var d = startDateObj2; d < this._dateStrToObj( this.t_0 ); d.setDate( d.getDate() + 1 )) {
         // console.log( d );
+        this.R[this._dateObjToStr(d)] = this.R_0;
         this.S[this._dateObjToStr(d)] = this.S_0;
     };
 
@@ -159,5 +162,15 @@ class SIR {
     }
   }
 
+  functionToMinimize( params ){
+    var result = 0.0;
+    for (var i = 0; i < v.length; i++){
+      result = result + v[i] * v[i]
+    }
+    return result;
+  }
 
+  optimize(){
+
+  }
 };

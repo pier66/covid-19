@@ -80,18 +80,6 @@ var infectedPerDayPerAccumulatedPercent =
     100
 );
 
-/*
-
-var deltaBetaLockdown =
-  multiplyValues(
-    addValues(
-      infectedSmoothed,                                   // infected smoothed
-      multiplyValues( getValuesReadyToPlot( sirI ), -1 )  // -I
-    ),
-    1 / ( sirStepsPerDay  )
-  );
-*/
-
 
 /*
 '#1f77b4',  // muted blue
@@ -113,84 +101,97 @@ function staticData(){
       marker: {color: '#d62728'},
       x: displayDates,
       y: getValuesReadyToPlot( covidPlusPerDay ),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'tested per day',
       marker: {color: '#bbbbbb'},
       x: displayDates,
       y: getValuesReadyToPlot( testedPerDay ),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: '% detected per day',
       marker: {color: '#ff7f0e'},
       x: displayDates,
       y: detectedPerCentPerDay,
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'infected per day',
       marker: {color: '#8c564b'},
       x: displayDates,
       y: getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'infected per day smoothed',
       marker: {color: '#d62728'},
       x: displayDates,
       y: infectedPerDaySmoothed,
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'infected per day versus accumulated (%)',
       marker: {color: '#aaaaaa'},
       x: displayDates,
       y: infectedPerDayPerAccumulatedPercent,
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'recovered per day',
       marker: {color: '#2ca02c'},
       x: displayDates,
       y: multiplyValues( getValuesReadyToPlot( recoveredPerDay ), -1 ),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'recovered per day -8 days',
       marker: {color: '#bcbd22'},
       x: displayDates,
       y: multiplyValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ), -1),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'recovered per day -8 days smoothed',
       marker: {color: '#2ca02c'},
       x: displayDates,
       y: multiplyValues( smoothValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) ), -1),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'lethal cases per day',
       marker: {color: '#1f77b4'},
       x: displayDates,
       y: multiplyValues( getValuesReadyToPlot( gonePerDay ), -1 ),
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'infected',
       marker: {color: '#e377c2'},
       x: displayDates,
       y: infected,
-      type: 'bar'
+      type: 'bar',
+      visible: 'legendonly'
     },
     {
       name: 'infected smoothed',
       marker: {color: '#e377c2'},
       x: displayDates,
-      y: infectedSmoothed /*,
+      y: infectedSmoothed, /*,
       type: 'bar' */
+      mode: 'markers',
+      type: 'scatter'
     }
   ]
 };
@@ -201,7 +202,8 @@ function sirData(){
       name: 'SIR susceptible',
       marker: {color: '#17becf'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.S )
+      y: getValuesReadyToPlot( sirResult.S )/*,
+      visible: 'legendonly'*/
     },
     {
       name: 'SIR infected',
@@ -213,7 +215,8 @@ function sirData(){
       name: 'SIR recovered',
       marker: {color: '#bcbd22'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.R )
+      y: getValuesReadyToPlot( sirResult.R )/*,
+      visible: 'legendonly'*/
     },
     {
       name: 'SIR infected per day',
@@ -389,65 +392,61 @@ function showHideStagesLockdown() {
   });
  };
 
-/*
-function updateGraph(){
-  sirResult = sir.compute();
-  Plotly.deleteTraces( graphDiv, [-5,-4,-3, -2, -1] );
-  Plotly.addTraces( graphDiv, sirData() );
-  showHideStagesLockdown();
-};
-*/
 
 function update( param, val ) {
   var repro_0;
     switch( param ){
       case 't_0':
-      sir.setParams( { 't_0': val } );
-      break;
+        sir.setParams( { 't_0': val } );
+        break;
+
+      case 'R_0':
+        sir.setParams( { 'R_0': parseFloat( val ) } );
+        document.getElementById('textR_0').value = val;
+        break;
 
       case 'S_0':
-      sir.setParams( { 'S_0': parseFloat( val ) } );
-      document.getElementById('textS_0').value = val;
-      break;
+        sir.setParams( { 'S_0': parseFloat( val ) } );
+        document.getElementById('textS_0').value = val;
+        break;
 
       case 'I_0':
-      sir.setParams( { 'I_0': parseFloat( val ) / sir.S_0 } );
-      document.getElementById('textI_0').value = val;
-      break;
+        sir.setParams( { 'I_0': parseFloat( val ) / sir.S_0 } );
+        document.getElementById('textI_0').value = val;
+        break;
+
 
       case 'beta':
-      sir.setParams( { 'beta': parseFloat( val ) } );
-      document.getElementById('textBeta').value = val;
-      repro_0 = sir.beta / sir.gamma;
-      document.getElementById('textRepro_0').innerHTML = repro_0.toFixed( 2 );
-      break;
+        sir.setParams( { 'beta': parseFloat( val ) } );
+        document.getElementById('textBeta').value = val;
+        repro_0 = sir.beta / sir.gamma;
+        document.getElementById('textRepro_0').innerHTML = repro_0.toFixed( 2 );
+        break;
 
       case 'gamma':
-      sir.setParams( { 'gamma': 1 / parseFloat( val ) } );
-      document.getElementById('textGamma').value = val;
-      repro_0 = sir.beta / sir.gamma;
-      document.getElementById('textRepro_0').innerHTML = repro_0.toFixed( 2 );
-      break;
+        sir.setParams( { 'gamma': 1 / parseFloat( val ) } );
+        document.getElementById('textGamma').value = val;
+        repro_0 = sir.beta / sir.gamma;
+        document.getElementById('textRepro_0').innerHTML = repro_0.toFixed( 2 );
+        break;
 
       case 'lockDown':
-      if( document.getElementById('checkboxSIRLockDown').checked == true ){
-        sir.setParams( { 'lockDown': true } );
-        console.log( 'ld: true');
-      }
-      else {
-        console.log( 'ld: false');
-        sir.setParams( { 'lockDown': false } );
-      };
-      break;
+        if( document.getElementById('checkboxSIRLockDown').checked == true ){
+          sir.setParams( { 'lockDown': true } );
+        }
+        else {
+          sir.setParams( { 'lockDown': false } );
+        };
+        break;
 
       case 't_LD':
-      sir.setParams( { 't_LD': val } );
-      break;
+        sir.setParams( { 't_LD': val } );
+        break;
 
       case 'beta_LD':
-      sir.setParams( { 'beta_LD': parseFloat( val ) } );
-      document.getElementById('textBetaLD').value = val;
-      break;
+        sir.setParams( { 'beta_LD': parseFloat( val ) } );
+        document.getElementById('textBetaLD').value = val;
+        break;
     };
 
     sirResult = sir.compute();
@@ -455,3 +454,10 @@ function update( param, val ) {
     Plotly.addTraces( graphDiv, sirData() );
     showHideStagesLockdown();
 };
+
+
+var timeSeriesI = new TimeSeries( sirI );
+//console.log( timeSeriesI );
+
+timeSeriesI.shiftByDays( -8 );
+//console.log( timeSeriesI );
