@@ -4,7 +4,7 @@ const graphDiv = document.getElementById('graphDiv');
 
 // display dates *********************************************
 const startDateStr = "01/02/2020";
-const endDateStr = "31/05/2020";
+const endDateStr = dateObjToStr( new Date() ); // "22/07/2020";
 
 const startDateObj = dateStrToObj( startDateStr );
 const endDateObj = dateStrToObj( endDateStr );
@@ -20,19 +20,10 @@ var dateRangeArr = [ dateObjToStr2( startDateObj ), dateObjToStr2( endDateObj ) 
 
 // plot ************************************************************************
 
-var sir = new SIR();
-var sirResult = sir.compute();
 
-var sirS = sirResult.S
-var sirI = sirResult.I;
-var sirR = sirResult.R;
-var sirIperDay = sirResult.IperDay;
-var sirRperDay = sirResult.RperDay;
-var stageAB = sirResult.stageAB;
-var stageBC = sirResult.stageBC;
 
-var detectedPerCentPerDay =
-    multiplyValues(
+var detectedPerDayPer100 =
+    multiplyValuesByFactor(
       divideValues(
         getValuesReadyToPlot( covidPlusPerDay ),
         getValuesReadyToPlot( testedPerDay )
@@ -40,14 +31,22 @@ var detectedPerCentPerDay =
     );
 
 
+var infectedPerDayPer100 =
+    multiplyValuesByFactor(
+      divideValues(
+        getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
+        getValuesReadyToPlot( translateValuesByDays( testedPerDay, -8 ) )
+      ), 100
+    );
+
 var infected =
     accumulateValues (
       addValues(
         addValues(
           getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
-          multiplyValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) , -1 )
+          multiplyValuesByFactor( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) , -1 )
         ),
-        multiplyValues( getValuesReadyToPlot( gonePerDay ), -1 )
+        multiplyValuesByFactor( getValuesReadyToPlot( gonePerDay ), -1 )
       )
     );
 
@@ -57,9 +56,9 @@ var infectedSmoothed =
           addValues(
             addValues(
               getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
-              multiplyValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) , -1 )
+              multiplyValuesByFactor( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) , -1 )
             ),
-            multiplyValues( getValuesReadyToPlot( gonePerDay ), -1 )
+            multiplyValuesByFactor( getValuesReadyToPlot( gonePerDay ), -1 )
           )
         )
       );
@@ -72,13 +71,33 @@ var infectedPerDaySmoothed = smoothValues(
 );
 
 var infectedPerDayPerAccumulatedPercent =
-  multiplyValues(
+  multiplyValuesByFactor(
     divideValues(
       infectedPerDaySmoothed,
       accumulateValues( infectedPerDaySmoothed )
     ),
     100
 );
+
+
+var sir = new SIR();
+// sir.importTestData( translateValuesByDays( testedPerDay, -8 ) ,translateValuesByDays( covidPlusPerDay, -8 ) );
+var sirResult = sir.compute();
+
+var sirS = sirResult.S
+var sirI = sirResult.I;
+var sirR = sirResult.R;
+var sirIperDay = sirResult.IperDay;
+var sirRperDay = sirResult.RperDay;
+var stageAB = sirResult.stageAB;
+var stageBC = sirResult.stageBC;
+
+var Isir_Ipcr = subtractValues( getValuesReadyToPlot( sirResult.IperDay, true ), smoothValues( infectedPerDayPer100 ) );
+
+for( var i = 0; i < 45; i++ ) {
+  Isir_Ipcr[i] = 0;
+};
+
 
 
 /*
@@ -105,6 +124,14 @@ function staticData(){
       visible: 'legendonly'
     },
     {
+      name: 'detected per day smoothed',
+      marker: {color: '#d62728'},
+      x: displayDates,
+      y: smoothValues( getValuesReadyToPlot( covidPlusPerDay ) ),
+      /* type: 'bar', */
+      visible: 'legendonly'
+    },
+    {
       name: 'tested per day',
       marker: {color: '#bbbbbb'},
       x: displayDates,
@@ -113,11 +140,59 @@ function staticData(){
       visible: 'legendonly'
     },
     {
-      name: '% detected per day',
+      name: 'tested per day smoothed',
+      marker: {color: '#bbbbbb'},
+      x: displayDates,
+      y: smoothValues( getValuesReadyToPlot( testedPerDay ) ),
+      /* type: 'bar', */
+      visible: 'legendonly'
+    },
+    {
+      name: 'tested per day smoothed -8 days /10',
+      marker: {color: '#bbbbbb'},
+      x: displayDates,
+      y: multiplyValuesByFactor( smoothValues( getValuesReadyToPlot( translateValuesByDays( testedPerDay, -8 ) ) ), 1/10 ),
+      /* type: 'bar', */
+      visible: 'legendonly'
+    },
+    {
+      name: 'detected per day per 100',
       marker: {color: '#ff7f0e'},
       x: displayDates,
-      y: detectedPerCentPerDay,
+      y: detectedPerDayPer100,
       type: 'bar',
+      visible: 'legendonly'
+    },
+    {
+      name: 'detected per day per 100 smoothed',
+      marker: {color: '#ff7f0e'},
+      x: displayDates,
+      y: smoothValues( detectedPerDayPer100 ),
+      /*type: 'bar', */
+      visible: 'legendonly'
+    },
+    {
+      name: 'detected per day per 100 smoothed cumul',
+      marker: {color: '#ff7f0e'},
+      x: displayDates,
+      y: accumulateValues( smoothValues( detectedPerDayPer100 ) ),
+      /*type: 'bar', */
+      visible: 'legendonly'
+    },
+    {
+      name: 'infected per day per 100',
+      marker: {color: '#ff7f0e'},
+      x: displayDates,
+      y: infectedPerDayPer100,
+      type: 'bar',
+      visible: 'legendonly'
+    },
+    {
+      name: 'infected per day per 100 smoothed',
+      marker: {color: '#ff7f0e'},
+      x: displayDates,
+      y: smoothValues( infectedPerDayPer100 ),
+      /*type: 'bar',*/
       visible: 'legendonly'
     },
     {
@@ -130,12 +205,11 @@ function staticData(){
     },
     {
       name: 'infected per day smoothed',
-      marker: {color: '#d62728'},
+      marker: {color: '#8c564b'},
       x: displayDates,
       y: infectedPerDaySmoothed,
-      type: 'bar',
       visible: 'legendonly'
-    },
+    },/*
     {
       name: 'infected per day versus accumulated (%)',
       marker: {color: '#aaaaaa'},
@@ -143,12 +217,12 @@ function staticData(){
       y: infectedPerDayPerAccumulatedPercent,
       type: 'bar',
       visible: 'legendonly'
-    },
+    }
     {
       name: 'recovered per day',
       marker: {color: '#2ca02c'},
       x: displayDates,
-      y: multiplyValues( getValuesReadyToPlot( recoveredPerDay ), -1 ),
+      y: multiplyValuesByFactor( getValuesReadyToPlot( recoveredPerDay ), -1 ),
       type: 'bar',
       visible: 'legendonly'
     },
@@ -156,7 +230,7 @@ function staticData(){
       name: 'recovered per day -8 days',
       marker: {color: '#bcbd22'},
       x: displayDates,
-      y: multiplyValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ), -1),
+      y: multiplyValuesByFactor( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ), -1),
       type: 'bar',
       visible: 'legendonly'
     },
@@ -164,15 +238,15 @@ function staticData(){
       name: 'recovered per day -8 days smoothed',
       marker: {color: '#2ca02c'},
       x: displayDates,
-      y: multiplyValues( smoothValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) ), -1),
+      y: multiplyValuesByFactor( smoothValues( getValuesReadyToPlot( translateValuesByDays( recoveredPerDay, -8 ) ) ), -1 ),
       type: 'bar',
       visible: 'legendonly'
-    },
+    },*/
     {
       name: 'lethal cases per day',
       marker: {color: '#1f77b4'},
       x: displayDates,
-      y: multiplyValues( getValuesReadyToPlot( gonePerDay ), -1 ),
+      y: multiplyValuesByFactor( getValuesReadyToPlot( gonePerDay ), -1 ),
       type: 'bar',
       visible: 'legendonly'
     },
@@ -189,9 +263,10 @@ function staticData(){
       marker: {color: '#e377c2'},
       x: displayDates,
       y: infectedSmoothed, /*,
-      type: 'bar' */
+      type: 'bar'
       mode: 'markers',
-      type: 'scatter'
+      type: 'scatter',*/
+      visible: 'legendonly'
     }
   ]
 };
@@ -199,36 +274,95 @@ function staticData(){
 function sirData(){
   return [
     {
+      name: 'infected smoothed no LD',
+      marker: {color: '#e377c2'},
+      x: displayDates,
+      y: addValues( infectedSmoothed, multiplyValuesByFactor( multiplyValues( Isir_Ipcr, infectedSmoothed ), 0.01 ) ),
+      mode: 'lines',
+      line: {
+        dash: 'dot',
+        width: 2
+      }, /*,
+      type: 'bar'
+      mode: 'markers',
+      type: 'scatter',*/
+      visible: 'legendonly'
+    },
+    {
       name: 'SIR susceptible',
       marker: {color: '#17becf'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.S )/*,
-      visible: 'legendonly'*/
+      y: getValuesReadyToPlot( sirResult.S, true ),
+      visible: 'legendonly'
     },
     {
       name: 'SIR infected',
       marker: {color: '#9467bd'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.I )
+      y: getValuesReadyToPlot( sirResult.I, true )
     },
     {
       name: 'SIR recovered',
       marker: {color: '#bcbd22'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.R )/*,
-      visible: 'legendonly'*/
+      y: getValuesReadyToPlot( sirResult.R, true ),
+      visible: 'legendonly'
     },
     {
       name: 'SIR infected per day',
       marker: {color: '#d62728'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.IperDay )
+      y: getValuesReadyToPlot( sirResult.IperDay, true )
     },
     {
       name: 'SIR recovered per day',
       marker: {color: '#2ca02c'},
       x: displayDates,
-      y: getValuesReadyToPlot( sirResult.RperDay )
+      y: getValuesReadyToPlot( sirResult.RperDay, true ),
+      visible: 'legendonly'
+    },
+    {
+      name: 'SIR I<sub>0</sub>e<sup>(beta-gamma)t</sup>',
+      marker: {color: '#000000'},
+      x: displayDates,
+      y: getValuesReadyToPlot( sirResult.exp, true )
+    },
+    {
+      name: 'SIR I<sub>0</sub> beta e<sup>(beta-gamma)t</sup>',
+      marker: {color: '#000000'},
+      x: displayDates,
+      y: multiplyValuesByFactor( getValuesReadyToPlot( sirResult.exp, true ), sir.beta )
+    },
+    {
+      name: 'I<sub>SIR</sub> - I<sub>PCR+</sub>',
+      marker: {color: '#1f77b4'},
+      x: displayDates,
+      y: Isir_Ipcr
+    },
+    {
+      name: 'infected cumul smoothed',
+      marker: {color: '#e377c2'},
+      x: displayDates,
+      y: accumulateValues( infectedPerDaySmoothed ), /*,
+      type: 'bar'
+      mode: 'markers',
+      type: 'scatter',
+      visible: 'legendonly'*/
+    },
+    {
+      name: 'infected cumul smoothed no LD',
+      marker: {color: '#e377c2'},
+      x: displayDates,
+      y: accumulateValues( addValues( infectedPerDaySmoothed, multiplyValuesByFactor( multiplyValues( Isir_Ipcr, smoothValues( getValuesReadyToPlot( translateValuesByDays( testedPerDay, -8 ) ) ) ), 0.01 ) ) ),
+      mode: 'lines',
+      line: {
+        dash: 'dot',
+        width: 2
+      }, /*,
+      type: 'bar'
+      mode: 'markers',
+      type: 'scatter',
+      visible: 'legendonly'*/
     }
   ]
 };
@@ -346,6 +480,14 @@ function getStageLabels(){
     yref: 'paper',
     text: 'Stage C',
     showarrow: false
+  },
+  {
+    x: dateStrToObj( sir.t_LD ),
+    y: 0.97,
+    xref: 'x',
+    yref: 'paper',
+    text: sir.t_LD,
+    showarrow: false
   }
 ]
 };
@@ -356,7 +498,12 @@ Plotly.newPlot(
   {
     margin: { t: 20 },
     shapes: [],
-    annotations: []
+    annotations: [],
+    font: {
+      family: 'Arial',
+      size: 15,
+      color: '#111111'
+    }
       /*,
     xaxis: {
       autorange: true,
@@ -375,7 +522,7 @@ function showHideStagesLockdown() {
   var stageLabels = [];
   if ( document.getElementById('checkboxStages').checked == true ){
     shapes = shapes.concat( getStageRectangles() );
-    stageLabels = getStageLabels();
+    // stageLabels = getStageLabels();
   };
 
   if ( document.getElementById('checkboxLockDown').checked == true ){
@@ -398,6 +545,7 @@ function update( param, val ) {
     switch( param ){
       case 't_0':
         sir.setParams( { 't_0': val } );
+        console.log( val );
         break;
 
       case 'R_0':
@@ -414,7 +562,6 @@ function update( param, val ) {
         sir.setParams( { 'I_0': parseFloat( val ) / sir.S_0 } );
         document.getElementById('textI_0').value = val;
         break;
-
 
       case 'beta':
         sir.setParams( { 'beta': parseFloat( val ) } );
@@ -450,7 +597,12 @@ function update( param, val ) {
     };
 
     sirResult = sir.compute();
-    Plotly.deleteTraces( graphDiv, [/*-8,-7,-6,*/-5,-4,-3, -2, -1] );
+    Isir_Ipcr = subtractValues( getValuesReadyToPlot( sirResult.IperDay, true ), smoothValues( infectedPerDayPer100 ) );
+    for( var i = 0; i < 45; i++ ) {
+      Isir_Ipcr[i] = 0;
+    };
+
+    Plotly.deleteTraces( graphDiv, [ -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1 ] );
     Plotly.addTraces( graphDiv, sirData() );
     showHideStagesLockdown();
 };

@@ -46,15 +46,31 @@ function translateValuesByDays( varName, byDays ){
   return translatedValues;
 };
 
-function getValuesReadyToPlot( varName ){
+function getValuesReadyToPlot( varName, cutEnd = false ){
+  var valuesDetected = false;
   var valuesReadyToPlot = [];
   for( var i = 0; i < displayDates.length; i++ ) {
     var dateStr = dateObjToStr( displayDates[i] );
     if( varName[dateStr] ){
+      valuesDetected = true;
       valuesReadyToPlot.push( varName[dateStr] );
     }
     else {
-      valuesReadyToPlot.push( 0 );
+      if( !cutEnd ) {
+          valuesReadyToPlot.push( 0 );
+      }
+      else {
+        if( !valuesDetected ){
+
+          if( varName[dateStr] === 0 ){
+            valuesReadyToPlot.push( 0 );
+          }
+          else {
+            valuesReadyToPlot.push( '' );
+          }
+
+        }
+      }
     }
   }
   return valuesReadyToPlot;
@@ -62,6 +78,7 @@ function getValuesReadyToPlot( varName ){
 
 function smoothValues( values ){
   var smoothedValues = [];
+  /*
   for( var i = 0; i < values.length; i++ ){
     if( i == 0 || i == values.length-1 ) {
       smoothedValues.push( values[i] );
@@ -81,13 +98,46 @@ function smoothValues( values ){
       smoothedValues.push( sum / 7 );
     }
   }
+  */
+  for( var i = 0; i < values.length; i++ ){
+
+    var sum = 0;
+
+    if( i <= 3 ) {
+
+      for( var j = 0; j <= 3+i; j++ ){
+        sum += values[j];
+      };
+
+    } else if ( i >= values.length - 3 ) {
+
+      for( var j = i - 3; j <= values.length - 1; j++ ){
+        sum += values[j];
+      };
+
+    } else {
+
+      for( var j = -3; j <= 3; j++ ){
+        sum += values[i+j];
+      };
+
+    };
+
+    smoothedValues.push( sum / 7 );
+  };
   return smoothedValues;
 };
 
-function multiplyValues( values, factor ) {
+
+function multiplyValuesByFactor( values, factor ) {
   var multipliedValues = [];
   for( var i = 0; i < values.length; i++ ){
-    multipliedValues[i] = factor * values[i];
+    if( values[i] === '' ){
+      multipliedValues[i] = '';
+    }
+    else {
+      multipliedValues[i] = factor * values[i];
+    };
   };
   return multipliedValues;
 };
@@ -110,10 +160,33 @@ function addValues( values1, values2 ){
   return addedValues;
 };
 
+function multiplyValues( values1, values2 ){
+  var multedValues = [];
+  for( var i = 0; i < values1.length; i++ ){
+    multedValues[i] = values1[i] * values2[i];
+  };
+  return multedValues;
+};
+
+function subtractValues( values1, values2 ){
+  var subtractedValues = [];
+  for( var i = 0; i < values1.length; i++ ){
+    subtractedValues[i] = values1[i] - values2[i];
+  };
+  return subtractedValues;
+};
+
 function divideValues( values1, values2 ){
   var dividedValues = [];
   for( var i = 0; i < values1.length; i++ ){
-    dividedValues[i] = values1[i] / values2[i];
+
+    if( values1[i] === 0 ) {
+      dividedValues[i] = 0;
+    }
+    else {
+      dividedValues[i] = values1[i] / values2[i];
+    }
+
   };
   return dividedValues;
 };
