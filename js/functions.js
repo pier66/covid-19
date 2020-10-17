@@ -78,7 +78,7 @@ function getValuesReadyToPlot( varName, cutEnd = false ){
 
 function smoothValues( values ){
   var smoothedValues = [];
-  /*
+
   for( var i = 0; i < values.length; i++ ){
     if( i == 0 || i == values.length-1 ) {
       smoothedValues.push( values[i] );
@@ -98,7 +98,8 @@ function smoothValues( values ){
       smoothedValues.push( sum / 7 );
     }
   }
-  */
+
+  /*
   for( var i = 0; i < values.length; i++ ){
 
     var sum = 0;
@@ -125,6 +126,7 @@ function smoothValues( values ){
 
     smoothedValues.push( sum / 7 );
   };
+  */
   return smoothedValues;
 };
 
@@ -190,3 +192,12 @@ function divideValues( values1, values2 ){
   };
   return dividedValues;
 };
+
+function drawConstant( value ){
+  var valuesToPlot = [];
+  for( var i = 0; i < displayDates.length; i++ ) {
+    var dateStr = dateObjToStr( displayDates[i] );
+    valuesToPlot.push( value );
+  };
+  return valuesToPlot;
+}

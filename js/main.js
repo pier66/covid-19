@@ -39,6 +39,7 @@ var infectedPerDayPer100 =
       ), 100
     );
 
+/*
 var infected =
     accumulateValues (
       addValues(
@@ -62,7 +63,11 @@ var infectedSmoothed =
           )
         )
       );
+*/
 
+
+var infected = accumulateValues( getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ) );
+var infectedSmoothed = smoothValues( infected );
 
 var infectedPerDaySmoothed = smoothValues(
   getValuesReadyToPlot(
@@ -117,7 +122,7 @@ function staticData(){
   return [
     {
       name: 'detected per day',
-      marker: {color: '#d62728'},
+      marker: { color: 'rgba( 214, 39, 40, 0.5 )' }, //  #d62728
       x: displayDates,
       y: getValuesReadyToPlot( covidPlusPerDay ),
       type: 'bar',
@@ -125,7 +130,7 @@ function staticData(){
     },
     {
       name: 'detected per day smoothed',
-      marker: {color: '#d62728'},
+      marker: { color: '#d62728' },
       x: displayDates,
       y: smoothValues( getValuesReadyToPlot( covidPlusPerDay ) ),
       /* type: 'bar', */
@@ -133,17 +138,19 @@ function staticData(){
     },
     {
       name: 'tested per day',
-      marker: {color: '#bbbbbb'},
+      marker: { color: 'rgba( 100, 100, 100, 0.5 )' }, //   #bbbbbb
       x: displayDates,
       y: getValuesReadyToPlot( testedPerDay ),
+      yaxis: 'y2',
       type: 'bar',
       visible: 'legendonly'
     },
     {
       name: 'tested per day smoothed',
-      marker: {color: '#bbbbbb'},
+      marker: { color: '#333333' },
       x: displayDates,
       y: smoothValues( getValuesReadyToPlot( testedPerDay ) ),
+      yaxis: 'y2',
       /* type: 'bar', */
       visible: 'legendonly'
     },
@@ -157,7 +164,7 @@ function staticData(){
     },
     {
       name: 'detected per day per 100',
-      marker: {color: '#ff7f0e'},
+      marker: { color: 'rgb( 255, 127, 14, 0.5 )' },
       x: displayDates,
       y: detectedPerDayPer100,
       type: 'bar',
@@ -165,23 +172,21 @@ function staticData(){
     },
     {
       name: 'detected per day per 100 smoothed',
-      marker: {color: '#ff7f0e'},
+      marker: { color: '#8c564b' },
       x: displayDates,
       y: smoothValues( detectedPerDayPer100 ),
-      /*type: 'bar', */
       visible: 'legendonly'
     },
     {
       name: 'detected per day per 100 smoothed cumul',
-      marker: {color: '#ff7f0e'},
+      marker: { color: '#e377c2' },
       x: displayDates,
       y: accumulateValues( smoothValues( detectedPerDayPer100 ) ),
-      /*type: 'bar', */
       visible: 'legendonly'
     },
     {
       name: 'infected per day per 100',
-      marker: {color: '#ff7f0e'},
+      marker: { color: 'rgb( 255, 127, 14, 0.5 )' },
       x: displayDates,
       y: infectedPerDayPer100,
       type: 'bar',
@@ -189,15 +194,14 @@ function staticData(){
     },
     {
       name: 'infected per day per 100 smoothed',
-      marker: {color: '#ff7f0e'},
+      marker: { color: '#8c564b' },
       x: displayDates,
       y: smoothValues( infectedPerDayPer100 ),
-      /*type: 'bar',*/
       visible: 'legendonly'
     },
     {
       name: 'infected per day',
-      marker: {color: '#8c564b'},
+      marker: { color: 'rgb( 255, 127, 14, 0.5 )' },
       x: displayDates,
       y: getValuesReadyToPlot( translateValuesByDays( covidPlusPerDay, -8 ) ),
       type: 'bar',
@@ -205,11 +209,12 @@ function staticData(){
     },
     {
       name: 'infected per day smoothed',
-      marker: {color: '#8c564b'},
+      marker: { color: '#8c564b' },
       x: displayDates,
       y: infectedPerDaySmoothed,
       visible: 'legendonly'
-    },/*
+    },
+     /*
     {
       name: 'infected per day versus accumulated (%)',
       marker: {color: '#aaaaaa'},
@@ -244,12 +249,30 @@ function staticData(){
     },*/
     {
       name: 'lethal cases per day',
-      marker: {color: '#1f77b4'},
+      marker: { color: '#1f77b4' },
       x: displayDates,
-      y: multiplyValuesByFactor( getValuesReadyToPlot( gonePerDay ), -1 ),
+      y: getValuesReadyToPlot( gonePerDay ),
       type: 'bar',
       visible: 'legendonly'
     },
+    {
+      name: 'soins normaux',
+      marker: { color: '#bcbd22' },
+      x: displayDates,
+      y: getValuesReadyToPlot( hospital ),
+      /*type: 'bar',*/
+      visible: 'legendonly',
+      yaxis: 'y2'
+    },
+    {
+      name: 'soins intensifs',
+      marker: { color: '#d62728' },
+      x: displayDates,
+      y: getValuesReadyToPlot( icu ),
+      /*type: 'bar',*/
+      visible: 'legendonly',
+      yaxis: 'y2'
+    },/*,
     {
       name: 'infected',
       marker: {color: '#e377c2'},
@@ -265,7 +288,19 @@ function staticData(){
       y: infectedSmoothed, /*,
       type: 'bar'
       mode: 'markers',
-      type: 'scatter',*/
+      type: 'scatter',
+      visible: 'legendonly'
+    } */
+    {
+      name: 'PCR error 1,6%',
+      mode: 'lines',
+      line: {
+        color: '#111111',
+        width: 1,
+        dash: 'dot'
+      },
+      x: displayDates,
+      y: drawConstant( 1.6 ),
       visible: 'legendonly'
     }
   ]
@@ -343,7 +378,8 @@ function sirData(){
       name: 'infected cumul smoothed',
       marker: {color: '#e377c2'},
       x: displayDates,
-      y: accumulateValues( infectedPerDaySmoothed ), /*,
+      y: accumulateValues( infectedPerDaySmoothed ),
+      yaxis: 'y2' /*,
       type: 'bar'
       mode: 'markers',
       type: 'scatter',
@@ -358,7 +394,8 @@ function sirData(){
       line: {
         dash: 'dot',
         width: 2
-      }, /*,
+      },
+      yaxis: 'y2' /*,
       type: 'bar'
       mode: 'markers',
       type: 'scatter',
@@ -503,8 +540,17 @@ Plotly.newPlot(
       family: 'Arial',
       size: 15,
       color: '#111111'
-    }
-      /*,
+    },
+    yaxis2: {
+      overlaying: 'y',
+      side: 'right'
+    },
+    legend: {
+      x: 1.05,
+      y: 0
+    }/*,
+    barmode: 'group'
+      ,
     xaxis: {
       autorange: true,
       range: dateRangeArr,
@@ -538,6 +584,15 @@ function showHideStagesLockdown() {
     annotations: stageLabels
   });
  };
+
+function showHideSecondAxis(){
+  if ( document.getElementById('checkboxSecondAxis').checked == true ){
+    Plotly.relayout( graphDiv, { 'yaxis2.visible': true } );
+  }
+  else {
+    Plotly.relayout( graphDiv, { 'yaxis2.visible': false } );
+  };
+};
 
 
 function update( param, val ) {

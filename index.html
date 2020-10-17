@@ -44,10 +44,11 @@
 
         </style>
 
-        <script src="data/covid_plus_per_day_20_08_2020.js"></script>
-				<script src="data/tested_per_day_20_08_2020.js"></script>
-        <script src="data/recovered_per_day.js"></script>
-				<script src="data/lethal_per_day.js"></script>
+        <script src="data/2020_09_14_pcrtotal.js"></script>
+				<script src="data/2020_09_14_pcrplus.js"></script>
+        <script src="data/2020_10_01_hospital.js"></script>
+				<script src="data/2020_10_01_icu.js"></script>
+				<script src="data/2020_09_14_lethal.js"></script>
 
 				<script src="js/functions.js"></script>
 				<script src="js/timeseries.js"></script>
@@ -63,6 +64,7 @@
         <div id="graphDiv"></div>
 
 				<div class="sliders">
+
 					<table>
 						<tr>
 							<td align="right">t<sub>0</sub> = </td>
@@ -111,18 +113,18 @@
 					<tr>
 					</tr>
 			</table>-->
-					<table>
+			<table>
 						<tr>
 							<td align="right">S<sub>0</sub> = </td>
 							<td><input class="valueBox" type="text" id="textS_0" value="778"></td>
 						</tr>
+						<tr>
 							<td colspan="2"><input class="slider" type="range" name="rangeInput" min="300" max="10000"
 							step="1" oninput="update( 'S_0', this.value );" value="778"></td>
-						<tr>
 						</tr>
-				</table>
+			</table>
 
-				<table>
+			<table>
 					<tr>
 						<td align="right">I<sub>0</sub> = </td>
 						<td><input class="valueBox" type="text" id="textI_0" value="1.2"></td>
@@ -133,14 +135,14 @@
 					</tr>
 			</table>
 
-				<table>
+			<table>
 						<tr>
 							<td align="right">&beta; = </td>
 							<td><input class="valueBox" type="text" id="textBeta" value="0.29"></td>
 						</tr>
+						 <tr>
 							<td colspan="2"><input class="slider" type="range" name="rangeInput" min="0.1" max="0.5"
 							step="0.005" oninput="update( 'beta', this.value );" value="0.29"></td>
-						<tr>
 						</tr>
 			</table>
 
@@ -155,7 +157,7 @@
 					</tr>
 			</table>
 
-				<div style="margin-right: 50px; display: inline-block;">repro<sub>0</sub> = <span id="textRepro_0"></span></div>
+			<div style="margin-right: 50px; display: inline-block;">repro<sub>0</sub> = <span id="textRepro_0"></span></div>
 
 				<table>
 					<tr>
@@ -172,9 +174,14 @@
 					<tr>
 						<td align="right">lockdown:</td>
 						<td><input type="checkbox" id="checkboxLockDown" onclick="showHideStagesLockdown()"></td>
-							</tr>
-					<table>
-			</div>
+					</tr>
+					<tr>
+						<td align="right">show second axis:</td>
+						<td><input type="checkbox" id="checkboxSecondAxis" onclick="showHideSecondAxis()" checked></td>
+					</tr>
+				</table>
+
+		</div>
 
 			<div class="sliders">
 				<table>
