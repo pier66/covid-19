@@ -11,7 +11,7 @@ const endDateObj = dateStrToObj( endDateStr );
 
 var displayDates = [];
 var startDateObjFor = dateStrToObj( startDateStr );
-for( var d = startDateObjFor; d <= endDateObj; d.setDate( d.getDate() + 1 )) {
+for( var d = startDateObjFor; d <= endDateObj-4; d.setDate( d.getDate() + 1 )) {
     displayDates.push( new Date(d) );
 };
 
@@ -134,6 +134,15 @@ function staticData(){
       x: displayDates,
       y: smoothValues( getValuesReadyToPlot( covidPlusPerDay ) ),
       /* type: 'bar', */
+      visible: 'legendonly'
+    },
+    {
+      name: 'detected per day smoothed cumulated',
+      marker: { color: 'rgba( 214, 39, 40, 0.5 )' }, //  #d62728
+      x: displayDates,
+      y: accumulateValues( smoothValues( getValuesReadyToPlot( covidPlusPerDay ) ) ),
+      type: 'scatter',
+      yaxis: 'y2',
       visible: 'legendonly'
     },
     {
@@ -328,7 +337,7 @@ function sirData(){
       marker: {color: '#17becf'},
       x: displayDates,
       y: getValuesReadyToPlot( sirResult.S, true ),
-      visible: 'legendonly'
+      //visible: 'legendonly'
     },
     {
       name: 'SIR infected',
@@ -341,7 +350,7 @@ function sirData(){
       marker: {color: '#bcbd22'},
       x: displayDates,
       y: getValuesReadyToPlot( sirResult.R, true ),
-      visible: 'legendonly'
+      //visible: 'legendonly'
     },
     {
       name: 'SIR infected per day',
@@ -354,14 +363,14 @@ function sirData(){
       marker: {color: '#2ca02c'},
       x: displayDates,
       y: getValuesReadyToPlot( sirResult.RperDay, true ),
-      visible: 'legendonly'
+      //visible: 'legendonly'
     },
     {
       name: 'SIR I<sub>0</sub>e<sup>(beta-gamma)t</sup>',
       marker: {color: '#000000'},
       x: displayDates,
       y: getValuesReadyToPlot( sirResult.exp, true )
-    },
+    } /*,
     {
       name: 'SIR I<sub>0</sub> beta e<sup>(beta-gamma)t</sup>',
       marker: {color: '#000000'},
@@ -383,7 +392,7 @@ function sirData(){
       type: 'bar'
       mode: 'markers',
       type: 'scatter',
-      visible: 'legendonly'*/
+      visible: 'legendonly'*//*
     },
     {
       name: 'infected cumul smoothed no LD',
@@ -399,8 +408,8 @@ function sirData(){
       type: 'bar'
       mode: 'markers',
       type: 'scatter',
-      visible: 'legendonly'*/
-    }
+      visible: 'legendonly'
+    }*/
   ]
 };
 
@@ -657,7 +666,7 @@ function update( param, val ) {
       Isir_Ipcr[i] = 0;
     };
 
-    Plotly.deleteTraces( graphDiv, [ -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1 ] );
+    Plotly.deleteTraces( graphDiv, [  -7, -6, -5, -4, -3, -2, -1 ] ); // -11, -10, -9, -8,
     Plotly.addTraces( graphDiv, sirData() );
     showHideStagesLockdown();
 };
